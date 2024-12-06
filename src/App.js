@@ -1,25 +1,44 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [matrix, setMatrix] = useState(Array(3).fill(Array(3).fill('white')));
+  const [clickOrder, setClickOrder] = useState([]);
+
+  const handleClick = (row, col) => {
+    if (clickOrder.length === 8 && matrix[row][col] === 'white') {
+      let updatedMatrix = [...matrix];
+      clickOrder.forEach(({ r, c }, index) => {
+        setTimeout(() => {
+          updatedMatrix[r][c] = 'orange';
+          setMatrix([...updatedMatrix]);
+        }, index * 500);
+      });
+      return;
+    }
+
+    const newMatrix = matrix.map((r, i) =>
+      r.map((cell, j) => (i === row && j === col ? 'green' : cell))
+    );
+
+    setClickOrder([...clickOrder, { r: row, c: col }]);
+    setMatrix(newMatrix);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="matrix">
+      {matrix.map((row, rowIndex) =>
+        row.map((color, colIndex) => (
+          <div
+            key={`${rowIndex}-${colIndex}`}
+            onClick={() => handleClick(rowIndex, colIndex)}
+            className="box"
+            style={{ backgroundColor: color }}
+          ></div>
+        ))
+      )}
     </div>
   );
-}
+};
 
 export default App;
